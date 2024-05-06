@@ -41,20 +41,34 @@ for i in range(len(turn_list)):
     prev_vel = vel_list[i]
 
 # Выводим результаты
-print(result1)
-print(result2)
-print(result3)
-print(result4)
-print(result5)
+# print(result1)
+# print(result2)
+# print(result3)
+# print(result4)
+# print(result5)
 
 
 # Пример использования функции
 db = DrivingMetricsDatabase('driving_metrics.db')
+db.create_tables()
+db.insert_example_data()
 
 # Выбираем экспертов, которые оценили параметр "Amplitude of Steering" со значением 1
-result = db.query_experts_by_parameter_value(1, 1, 6)
-
-# Выводим результат
+result = db.query_experts_by_parameter_value(rate = 2,parameter_id  = 1, value = result2)
+experts = list()
+#формируем список экспертов
 for row in result:
-    print(row)
+    experts.append(row[0])
 
+
+#находим диапазон под параметр
+for i in range(3):
+    min_val = 10000
+    max_val = -1
+    for j in range(len(experts)):
+        result = db.query_values_by_parameter(parameter_id = 1, expert = experts[j], rate = i+1)
+        if (result[0][3]< min_val):
+            min_val = result[0][3]
+        if (result[0][4] >max_val):
+            max_val = result[0][4] 
+    print(f"rate {i} min {min_val} max {max_val}")

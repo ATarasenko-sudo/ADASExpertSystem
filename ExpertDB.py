@@ -145,7 +145,7 @@ class DrivingMetricsDatabase:
 
         # Выполняем запрос для вывода информации об экспертах по выбранному параметру и значению
         cursor.execute('''
-            SELECT e.expert_id, e.rating, e.min_value, e.max_value
+            SELECT e.expert_id
             FROM ratings e
             WHERE e.rating = ? AND e.parameter_id = ? AND ? BETWEEN e.min_value AND e.max_value
         ''', (rate, parameter_id, value))
@@ -153,5 +153,21 @@ class DrivingMetricsDatabase:
         data = cursor.fetchall()
         connection.close()
         return data
+    
+    def query_values_by_parameter(self, rate, parameter_id, expert):
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+
+        # Выполняем запрос для вывода информации об экспертах
+        cursor.execute('''
+            SELECT *
+            FROM ratings e
+            WHERE e.parameter_id = ? AND e.expert_id = ? AND e.rating = ?
+        ''', (parameter_id, expert,rate))
+
+        data = cursor.fetchall()
+        connection.close()
+        return data
+    
 
 
