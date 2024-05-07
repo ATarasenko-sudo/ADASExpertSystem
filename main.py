@@ -1,5 +1,11 @@
 from metricCalculator import *
 from ExpertDB import *
+
+            # VALUES (1, 'Amplitude of Steering'),
+            #         (2, 'Amplitude of Acceleration'),
+            #         (3, 'Depal Counter'),
+            #         (4, 'Calc LDV'),
+            #         (5, 'Calc Mean Velocity')
 # Создаем экземпляр класса
 calculator = DrivingMetricsCalculator()
 
@@ -50,8 +56,8 @@ for i in range(len(turn_list)):
 
 # Пример использования функции
 db = DrivingMetricsDatabase('driving_metrics.db')
-db.create_tables()
-db.insert_example_data()
+# db.create_tables()
+# db.insert_example_data()
 
 # Выбираем экспертов, которые оценили параметр "Amplitude of Steering" со значением 1
 result = db.query_experts_by_parameter_value(rate = 2,parameter_id  = 1, value = result2)
@@ -61,14 +67,25 @@ for row in result:
     experts.append(row[0])
 
 
-#находим диапазон под параметр
-for i in range(3):
-    min_val = 10000
-    max_val = -1
-    for j in range(len(experts)):
-        result = db.query_values_by_parameter(parameter_id = 1, expert = experts[j], rate = i+1)
-        if (result[0][3]< min_val):
-            min_val = result[0][3]
-        if (result[0][4] >max_val):
-            max_val = result[0][4] 
-    print(f"rate {i} min {min_val} max {max_val}")
+# Создаем словарь для хранения минимальных и максимальных значений
+ratings_range = {}
+
+# Находим диапазон под параметр
+for parameter in range(5):
+    for i in range(3):
+        min_val = 10000
+        max_val = -1
+        for j in range(len(experts)):
+            result = db.query_values_by_parameter(parameter_id=parameter+1, expert=experts[j], rate=i+1)
+            if result[0][3] < min_val:
+                min_val = result[0][3]
+            if result[0][4] > max_val:
+                max_val = result[0][4]
+        # Сохраняем минимальное и максимальное значение для данной оценки в словаре
+        ratings_range[(parameter, i)] = (min_val, max_val)
+
+# Выводим результаты
+for key, value in ratings_range.items():
+    print(f"Parameter {key[0]}, rate {key[1]}: min {value[0]}, max {value[1]}")
+print("________________________________")
+print(ratings_range[0,0][0])
