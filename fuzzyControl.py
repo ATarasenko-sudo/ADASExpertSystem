@@ -71,7 +71,7 @@ class FuzzyLogicController:
         self.driver_state_ctrl = ctrl.ControlSystem(rules)
         self.driver_state = ctrl.ControlSystemSimulation(self.driver_state_ctrl)
 
-    def compute_brake_force(self, Steer, Acc,Lane):
+    def compute_estimate(self, Steer, Acc,Lane):
         # Присваивание входных значений
         self.driver_state.input['amplitudeOfSteer'] = Steer
         self.driver_state.input['amplitudeOfAcc'] = Acc
@@ -98,4 +98,4 @@ class FuzzyLogicController:
 # if __name__ == "__main__":
 #     controller = FuzzyLogicController(ratings_range)
 
-#     brake_force = controller.compute_brake_force(result1, result2, result4)
+#     brake_force = controller.compute_estimate(result1, result2, result4)
