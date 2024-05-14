@@ -108,8 +108,7 @@ for iteration in range(len(dist_list)):
 
     #Продолжаем блок обратной связи
     # #Проверяем, если состояние ухудшилось, если водитель несгласен с оценкой , меняем стратегию
-    # if (observations_sequence[-1] != preview_state or observations_sequence[-1] < predict_list[-1]):
-    if (observations_sequence[-1] != preview_state):
+    if (observations_sequence[-1] != preview_state or observations_sequence[-1] < predict_list[-1]):
         state_check = int(input("Замечено изменение в Вашем самочувствии, оцените ваше состояние, вы согласны с оценкой? 1- Да|0 - Нет "))
         if state_check == 1:
             state_check = True
