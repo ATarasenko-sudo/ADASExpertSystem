@@ -83,7 +83,7 @@ class FuzzyLogicController:
         plt.show()
 
         # Возвращение выходного значения
-        return math.ceil(self.driver_state.output['DriverState'])
+        return math.ceil(self.driver_state.output['DriverState']) -1 
 
     def plot_membership_functions(self):
         # Вывод функций принадлежности

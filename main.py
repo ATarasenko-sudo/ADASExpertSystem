@@ -13,6 +13,7 @@ def CreateExpertList(db, first_estimate, result):
     #формируем список экспертов
     for row in result:
         experts.append(row[0])
+    print(experts)
     return experts
 
 def CreateMembershipFunc(db,experts):
@@ -32,6 +33,11 @@ def CreateMembershipFunc(db,experts):
                     max_val = result[0][4]
             # Сохраняем минимальное и максимальное значение для данной оценки в словаре
             ratings_range[(parameter, i)] = (min_val, max_val)
+
+    for key, value in ratings_range.items():
+        print(f"Parameter {key[0]}, rate {key[1]}: min {value[0]}, max {value[1]}")
+        print("________________________________")
+        print(ratings_range[0,0][0])
     return ratings_range
 
 
@@ -41,22 +47,31 @@ ChangeMindFlag = False
 
 metrics = DrivingMetricsCalculator()
 hmmModel = HiddenMarkovModel()
+hmmModel.fit()
 db = DrivingMetricsDatabase('driving_metrics.db')
 
-
+#Создаем базу данных, если ранее не создана
 if initFlag:
     db.create_tables()
     db.insert_example_data()
     initFlag = False
 
 #Создать массивы данных 
-turn_list = [False, False, True, True, False]
-dist_list = [0.1, 0.3, 0.1, 0.3, 0.13]
-steer_list = [12, 20, 15, 20, 10]
-acc_list = [0.1, 0.2, 0.2, 0.4, 0.1]
-pedal_list = [True, False, False, True, False]
-vel_list = [5, 14, 12, 10, 20]
+steer_list = [3, 1, 2,4, 8,9,11,11,11]
+acc_list = [1, 1, 2,1, 9,9, 11,11,11]
+pedal_list = [2, 3, 4, 3, 6,7,13,14,14 ]
+dist_list = [1,1,1,1, 4,4, 7,8,9]
+vel_list = [1,2,3,4,13,13,17,17]
 
+
+
+# steer_list = [3, 1, 2,4, 8,9,11,11,11]
+# acc_list = [1, 1, 2,1, 1,2, 11,11,11]
+# pedal_list = [2, 3, 4, 3, 6,7,13,14,14 ]
+# dist_list = [1,1,1,1, 4,4, 7,8,9]
+# vel_list = [1,2,3,4,13,13,17,17]
+
+#Списки оценок и прогнозов
 current_estimate_list = list()
 predict_list = list()
 
@@ -74,7 +89,7 @@ for iteration in range(len(dist_list)):
         if ChangeMindFlag:
             first_estimate = int(math.ceil(float(input("Замечено изменение в Вашем самочувствии, оцените ваше состояние: "))))
             ChangeMindFlag = not(ChangeMindFlag)
-        preview_state = first_estimate
+        preview_state = first_estimate - 1
         #Рассчитываем функции принадлежности, согласно данным пользователя
         experts = CreateExpertList(db= db, first_estimate= first_estimate, result=acc_list[iteration])
         ratings_range = CreateMembershipFunc(db = db, experts=experts)
@@ -87,18 +102,26 @@ for iteration in range(len(dist_list)):
 
     #Прогнозируем результат
     observations_sequence = np.array(current_estimate_list).reshape(-1, 1)
-    predict_list = list(hmm_model.predict(observations_sequence))
+    # print(observations_sequence)
+    # print(predict_list)
+    predict_list = list(hmmModel.predict(observations_sequence))
 
     #Продолжаем блок обратной связи
-    #Проверяем, если состояние ухудшилось, если водитель несгласен с оценкой , меняем стратегию
-    if (observations_sequence[-1] != preview_state or observations_sequence[-1] < predict_list[-1]):
-        state_check = bool(input("Замечено изменение в Вашем самочувствии, оцените ваше состояние, вы согласны с оценкой? True|False "))
+    # #Проверяем, если состояние ухудшилось, если водитель несгласен с оценкой , меняем стратегию
+    # if (observations_sequence[-1] != preview_state or observations_sequence[-1] < predict_list[-1]):
+    if (observations_sequence[-1] != preview_state):
+        state_check = int(input("Замечено изменение в Вашем самочувствии, оцените ваше состояние, вы согласны с оценкой? 1- Да|0 - Нет "))
+        if state_check == 1:
+            state_check = True
+        else:
+            state_check = False
+        print(state_check)
         if not(state_check):
-            ChangeMindFlag = not(ChangeMindFlag)
+            ChangeMindFlag = True
     preview_state = observations_sequence[-1]
 
 # Plot the results
-hmm_model.plot_results(observations_sequence, predict_list)
+hmmModel.plot_results(observations_sequence, predict_list)
 
     
 

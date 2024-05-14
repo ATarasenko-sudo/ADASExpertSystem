@@ -37,18 +37,18 @@ class HiddenMarkovModel:
 
 
 
-# Create an instance of the HiddenMarkovModel class
-hmm_model = HiddenMarkovModel()
+# # Create an instance of the HiddenMarkovModel class
+# hmm_model = HiddenMarkovModel()
 
-# Fit the model
-hmm_model.fit()
+# # Fit the model
+# hmm_model.fit()
 
-# Define the sequence of observations
-observations_sequence = np.array([0, 0, 0, 0, 1, 1, 2, 2, 2]).reshape(-1, 1)
+# # Define the sequence of observations
+# observations_sequence = np.array([0, 0, 0, 0, 1, 1, 2, 2, 2]).reshape(-1, 1)
 
-# Predict the most likely hidden states
-hidden_states = hmm_model.predict(observations_sequence)
-print("Most likely hidden states:", hidden_states)
+# # Predict the most likely hidden states
+# hidden_states = hmm_model.predict(observations_sequence)
+# print("Most likely hidden states:", hidden_states)
 
-# Plot the results
-hmm_model.plot_results(observations_sequence, hidden_states)
+# # Plot the results
+# hmm_model.plot_results(observations_sequence, hidden_states)
